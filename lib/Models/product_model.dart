@@ -46,32 +46,39 @@ class Product {
     required this.reviews,
     required this.meta,
   });
+
   factory Product.fromJson(Map<String, dynamic> data) {
     return Product(
-      id: data["id"],
-      title: data["title"],
-      description: data["description"],
-      category: data["category"],
-      price: data["price"].toDouble(),
-      discountPercentage: data["discountPercentage"].toDouble(),
-      rating: data["rating"].toDouble(),
-      stock: data["stock"],
-      tags: List<String>.from(data["tags"]),
-      brand: data["brand"],
-      sku: data["sku"],
-      weight: data["weight"].toDouble(),
-      warrantyInformation: data["warrantyInformation"],
-      shippingInformation: data["shippingInformation"],
-      availabilityStatus: data["availabilityStatus"],
-      returnPolicy: data["returnPolicy"],
-      minimumOrderQuantity: data["minimumOrderQuantity"],
-      images: List<String>.from(data["images"]),
-      thumbnail: data["thumbnail"],
-      dimensions: Dimensions.fromJson(data['dimensions']),
-      reviews: (data['reviews'] as List)
-          .map((reviewJson) => Review.fromJson(reviewJson))
-          .toList(),
-      meta: Meta.fromJson(data['meta']),
+      id: data["id"] ?? 0,
+      title: data["title"] ?? 'No Title',
+      description: data["description"] ?? 'No Description',
+      category: data["category"] ?? 'No Category',
+      price: (data["price"] ?? 0).toDouble(),
+      discountPercentage: (data["discountPercentage"] ?? 0).toDouble(),
+      rating: (data["rating"] ?? 0).toDouble(),
+      stock: data["stock"] ?? 0,
+      tags: data["tags"] != null ? List<String>.from(data["tags"]) : [],
+      brand: data["brand"] ?? 'No Brand',
+      sku: data["sku"] ?? 'No SKU',
+      weight: (data["weight"] ?? 0).toDouble(),
+      warrantyInformation: data["warrantyInformation"] ?? 'No Warranty',
+      shippingInformation: data["shippingInformation"] ?? 'No Shipping Info',
+      availabilityStatus: data["availabilityStatus"] ?? 'Unknown',
+      returnPolicy: data["returnPolicy"] ?? 'No Return Policy',
+      minimumOrderQuantity: data["minimumOrderQuantity"] ?? 1,
+      images: data["images"] != null ? List<String>.from(data["images"]) : [],
+      thumbnail: data["thumbnail"] ?? '',
+      dimensions: data['dimensions'] != null
+          ? Dimensions.fromJson(data['dimensions'])
+          : Dimensions(width: 0, height: 0, depth: 0),
+      reviews: data['reviews'] != null
+          ? (data['reviews'] as List)
+              .map((reviewJson) => Review.fromJson(reviewJson))
+              .toList()
+          : [],
+      meta: data['meta'] != null
+          ? Meta.fromJson(data['meta'])
+          : Meta(createdAt: '', updatedAt: '', barcode: '', qrCode: ''),
     );
   }
 }
