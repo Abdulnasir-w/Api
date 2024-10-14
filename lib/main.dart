@@ -1,6 +1,5 @@
 import 'package:api/Screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(
