@@ -1,4 +1,5 @@
 import 'package:api/Components/custom_button.dart';
+import 'package:api/Screens/Google%20Maps/google_maps.dart';
 import 'package:api/Screens/Product/produnct_screen.dart';
 import 'package:api/Screens/Recipe/recipe_screen.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,32 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
-                )
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 13,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomButton(
+                  title: "Google Maps",
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GoogleMapsExample(),
+                        ));
+                  },
+                ),
+                Text(
+                  "Maps Api",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ],
