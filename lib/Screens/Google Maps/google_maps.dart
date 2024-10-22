@@ -1,3 +1,4 @@
+import 'package:api/Components/custom_textfield.dart';
 import 'package:api/Provider/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -16,14 +17,21 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
   late GoogleMapController mapController;
   LatLng defaultLocation = LatLng(34.015137, 71.524918);
   final Set<Circle> _circles = {};
+  final Set<Polyline> polyLines = {};
   String? _mapStyle;
   // final Set<Marker> _markers = {};
+  bool isSearching = false;
+  TextEditingController searchController = TextEditingController();
+
+  LatLng startLocation = LatLng(34.00869, 71.55834); // Start Point
+  LatLng endLocation = LatLng(33.99944, 71.53851); // End Point
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermissions();
     loadMapStyle();
+    // polyLine();
   }
 
   Future<void> _requestLocationPermissions() async {
@@ -36,6 +44,7 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
       await locationProvider.fetchCurrentLocation();
       if (locationProvider.currentLocation != null) {
         addCircle(locationProvider.currentLocation!);
+        polyLine(locationProvider.currentLocation!);
       }
     }
   }
@@ -53,6 +62,22 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
         ),
       );
     });
+  }
+
+  void polyLine(LatLng end) {
+    polyLines.add(
+      Polyline(
+        polylineId: PolylineId("route"),
+        points: [startLocation, end],
+        color: Colors.red,
+        width: 5,
+        patterns: [
+          PatternItem.dot,
+          // PatternItem.dash(10),
+          PatternItem.gap(10)
+        ],
+      ),
+    );
   }
 
   /// Map Style
@@ -91,16 +116,34 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xff3F51B5),
-        title: const Text(
-          "Google Map",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        title: isSearching
+            ? CustomTextfield(
+                controller: searchController,
+                label: "Search",
+              )
+            : const Text(
+                "Google Map",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+                if (!isSearching) {
+                  searchController.clear();
+                }
+              });
+            },
+            icon: Icon(isSearching ? Icons.close : Icons.search),
+          ),
+        ],
       ),
       body: locationProvider.permissionStatus == PermissionStatus.granted
           ? GoogleMap(
@@ -110,7 +153,6 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
               ),
               onMapCreated: (GoogleMapController controller) {
                 mapController = controller;
-                // If current location is available, update the map's camera
                 if (locationProvider.currentLocation != null) {
                   _updateLocation(locationProvider.currentLocation!);
                 }
@@ -119,6 +161,7 @@ class _GoogleMapsExampleState extends State<GoogleMapsExample> {
                   mapController.setMapStyle(_mapStyle);
                 }
               },
+              polylines: polyLines,
               markers: locationProvider.currentLocation != null
                   ? {
                       Marker(
