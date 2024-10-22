@@ -1,5 +1,5 @@
-import 'package:api/Provider/permission_provider.dart';
 import 'package:api/Screens/home_screen.dart';
+import 'package:api/Provider/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +7,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PermissionProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
       ],
       child: const MyApp(),
     ),

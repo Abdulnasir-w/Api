@@ -1,13 +1,16 @@
-import 'package:api/Services/location_services.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PermissionProvider with ChangeNotifier {
+class LocationProvider with ChangeNotifier {
+  LatLng? _currentLocation;
   PermissionStatus _permissionStatus = PermissionStatus.denied;
-  String _currentLocation = "Location Not Available";
 
+  LatLng? get currentLocation => _currentLocation;
   PermissionStatus get permissionStatus => _permissionStatus;
-  String get currentLocation => _currentLocation;
 
   Future<void> checkLocationPermission() async {
     _permissionStatus = await Permission.location.status;
@@ -17,20 +20,25 @@ class PermissionProvider with ChangeNotifier {
   Future<void> requestLocationPermission() async {
     _permissionStatus = await Permission.location.request();
     notifyListeners();
+
     if (_permissionStatus.isGranted) {
-      await _getCurrentLocation();
-      print("Location permission granted.");
-    } else if (_permissionStatus.isDenied) {
-      // Handle denied permission
-      print("Location permission denied.");
+      await fetchCurrentLocation();
     } else if (_permissionStatus.isPermanentlyDenied) {
-      // Open settings if permanently denied
       await openAppSettings();
     }
   }
 
-  Future<void> _getCurrentLocation() async {
-    _currentLocation = await LocationServices.getCurrentLocation();
+  Future<void> fetchCurrentLocation() async {
+    bool locationEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!locationEnabled) {
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    _currentLocation = LatLng(position.latitude, position.longitude);
     notifyListeners();
   }
 }
